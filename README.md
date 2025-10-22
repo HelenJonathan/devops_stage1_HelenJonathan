@@ -1,56 +1,38 @@
-# HNG13 Stage 1 DevOps Task
+# 🚀 HNG13 Stage 1 DevOps Task – Automated Deployment Script
 
-## 🚀 Overview
-This project automates the setup, deployment, and configuration of a Dockerized application on a remote Linux (Linode) server using a single Bash script.
-
-
-## ⚙️ Configuration Details
-
-REMOTE_USER="root"
-REMOTE_IP="172.233.145.169"
-SSH_KEY="~/.ssh/id_ed25519"
-APP_PORT=8080
-REMOTE_NAME="hng13-stage1"
-REPO="git@github.com:HelenJonathan/hng13-stage1-devops.git"
-BRANCH="main"
+## Author
+**Name:** Helen Efebe  
+**Slack Username:** `the_helenefebe`  
+**GitHub Username:** `HelenJonathan`
 
 ---
 
-echo "Starting deployment to $REMOTE_NAME ($REMOTE_IP)..."
+## 🎯 Task Objective
+To develop a **production-grade Bash script** (`deploy.sh`) that automates:
+- The setup, configuration, and deployment of a Dockerized application
+- On a **remote Linux (Linode)** server
+- With proper logging, error handling, and idempotency
 
-# Clone or update repository on local
-if [ ! -d "./repo" ]; then
-echo "Cloning repository..."
-git clone -b $BRANCH $REPO repo
-else
-echo "Updating existing repository..."
-cd repo && git pull origin $BRANCH && cd ..
-fi
+---
 
-# Compress the repo
-tar -czf app.tar.gz -C repo .
+## ⚙️ Features
+✅ Accepts parameters for repo, branch, SSH credentials, and port  
+✅ Clones or updates the GitHub repo automatically  
+✅ Installs Docker, Docker Compose, and Nginx on the remote host  
+✅ Deploys containerized app (Dockerfile or docker-compose)  
+✅ Configures Nginx as reverse proxy  
+✅ Validates deployment and logs all activities
 
-# Copy compressed files to remote server
-echo "Transferring files to remote server..."
-scp -i $SSH_KEY app.tar.gz $REMOTE_USER@$REMOTE_IP:/root/
+---
 
-# Connect and deploy remotely
-echo "Deploying on remote server..."
-ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_IP << EOF
-echo "Setting up on remote server..."
-mkdir -p /root/app
-tar -xzf /root/app.tar.gz -C /root/app
+## 🧰 Requirements
+- **Ubuntu 22.04 LTS** (local and remote)
+- **Git**, **Docker**, **Docker Compose**, **Nginx**
+- SSH key authentication configured for both GitHub and Linode
 
-cd /root/app
+---
 
-echo "Pulling latest Docker image and rebuilding container..."
-docker compose down || true
-docker compose up -d --build
-
-echo "Deployment complete on $REMOTE_NAME!"
-docker ps
-EOF
-
-# Cleanup
-rm app.tar.gz
-echo "Local cleanup done."
+## 🚀 Usage
+1. Make the script executable:
+   ```bash
+   chmod +x deploy.sh
